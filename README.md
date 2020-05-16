@@ -8,16 +8,20 @@ The objective of the project is to publish api's to allow customers to save new 
 
 In order to save new account, customer must informer the document number, e.g: 
 
-  ```{
+```
+ {
     "document_number": 123456789
-  }```
+  }
+```
 
 If the document number doesn't exists into database, the account will be saved and an object account will be returned, e.g:
 
-  ```{
+```
+  {
     "account_id": 1,
     "document_number": 123456789
-  }```
+  }
+```
 
 If the document number already exists into database, the system will return an error with 404 http status.
 
@@ -26,11 +30,13 @@ If the document number already exists into database, the system will return an e
 
 This is the system core. Through this api is possible to save new transactions related to the account informed in the request. E.g:
 
+```
   {
      "account_id": 1, 
      "operation_type_id": 1, 
      "amount": 123.45
   }
+```
 
 Something to notice:
 
@@ -65,8 +71,13 @@ To check if the system is up, you can go to localhost:8761 this is the service-r
 
 To test the api's, you can run the following commands:
 
+```
 - curl -X POST -H 'Content-Type: application/json' -d '{"document_number": 123456789}' localhost:8081/v1/accounts -i 
+```
+
+```
 - curl -X POST -H 'Content-Type: application/json' -d '{"account_id": 1, "operation_type_id": 1, "amount": 123.45}' localhost:8082/v1/transactions -i 
+```
 
 The first comand will save an account. The second command will save a transaction. Both commands must return 201 http status.
 
