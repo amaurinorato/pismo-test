@@ -35,7 +35,13 @@ This is the system core. Through this api is possible to save new transactions r
 Something to notice:
 
 - If the account doens't exists, the system will return a 404 http status
-- The allowed operation types id's are: 1 (COMPRA A VISTA), 2 (COMPRA PARCELADA), 3 (SAQUE) and 4 (PAGAMENTO). In case of the operation type be _pagamento_, the amount will be saved positive. If not, the amount will be negative.
+- The allowed operation types id's are: 
+- 1 (COMPRA A VISTA)
+- 2 (COMPRA PARCELADA)
+- 3 (SAQUE) 
+- 4 (PAGAMENTO). 
+
+In case of the operation type be _pagamento_, the amount will be saved positive. If not, the amount will be negative.
 
 The api returns the transactions saved, with its respective id.
 
