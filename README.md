@@ -9,18 +9,18 @@ The objective of the project is to publish api's to allow customers to save new 
 In order to save new account, customer must informer the document number, e.g: 
 
 ```
- {
-    "document_number": 123456789
-  }
+{
+  "document_number": 123456789
+}
 ```
 
 If the document number doesn't exists into database, the account will be saved and an object account will be returned, e.g:
 
 ```
-  {
-    "account_id": 1,
-    "document_number": 123456789
-  }
+{
+  "account_id": 1,
+  "document_number": 123456789
+}
 ```
 
 If the document number already exists into database, the system will return an error with 404 http status.
@@ -31,11 +31,11 @@ If the document number already exists into database, the system will return an e
 This is the system core. Through this api is possible to save new transactions related to the account informed in the request. E.g:
 
 ```
-  {
-     "account_id": 1, 
-     "operation_type_id": 1, 
-     "amount": 123.45
-  }
+{
+   "account_id": 1, 
+   "operation_type_id": 1, 
+   "amount": 123.45
+}
 ```
 
 Something to notice:
