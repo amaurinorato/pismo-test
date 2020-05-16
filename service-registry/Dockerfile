@@ -1,4 +1,15 @@
-FROM java:8
-WORKDIR /service-registry
-COPY target/service-registry.jar service-registry.jar
-CMD ["java", "-jar", "service-registry.jar"]
+#
+# Build stage
+#
+FROM maven:3.6.0-jdk-11-slim AS build
+COPY src /home/app/src
+COPY pom.xml /home/app
+RUN mvn -f /home/app/pom.xml clean package
+
+#
+# Package stage
+#
+FROM openjdk:8-jre-slim
+COPY --from=build /home/app/target/service-registry.jar /usr/local/lib/service-registry.jar
+EXPOSE 8761
+ENTRYPOINT ["java","-jar","/usr/local/lib/service-registry.jar"]
