@@ -1,0 +1,94 @@
+version: '3'
+
+services:
+  mysql.accounts:
+    image: mysql:5.7
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: pismo123
+      MYSQL_DATABASE: accounts
+      MYSQL_USER: account_user    
+      MYSQL_PASSWORD: account123  
+    volumes:
+      - mysql.accounts:/var/lib/mysql
+    networks:
+      dev:
+        aliases:
+          - mysql.accounts
+  mysql.transactions:  
+    image: mysql:5.7  
+    ports:    
+      - "3308:3306"  
+    environment:    
+      MYSQL_ROOT_PASSWORD: pismo123    
+      MYSQL_DATABASE: transactions    
+      MYSQL_USER: transaction_user    
+      MYSQL_PASSWORD: transaction123  
+    volumes:    
+      - mysql.transactions:/var/lib/mysql
+    networks:
+      dev:
+        aliases:
+          - mysql.transactions
+
+  service-registry:
+    image: amaurinorato/pismo-service-registry:latest
+    build:
+      dockerfile: Dockerfile
+      context: ./service-registry
+    container_name: pismo-service-registry
+    environment:
+      PORT: 8761
+    ports:
+      - 8761:8761
+    networks:
+      dev:
+        aliases:
+          - service-registry
+
+  accounts:
+    image: amaurinorato/pismo-accounts:latest
+    build:
+      dockerfile: Dockerfile
+      context: ./accounts
+    container_name: pismo-accounts
+    environment:
+      PORT: 8080
+      DB_URI: jdbc:mysql://mysql.accounts:3306/accounts?createDatabaseIfNotExist=true
+      EUREKA_URI: http://service-registry:8761/eureka/
+      MYSQL_USER: account_user    
+      MYSQL_PASSWORD: account123  
+    ports:
+      - 8081:8080
+    networks:
+      dev:
+        aliases:
+          - accounts
+
+  transactions:
+    image: amaurinorato/pismo-transactions:latest
+    build:
+      dockerfile: Dockerfile
+      context: ./transactions
+    container_name: pismo-transactions
+    environment:
+      PORT: 8080
+      DB_URI: jdbc:mysql://mysql.transactions:3306/transactions?createDatabaseIfNotExist=true
+      EUREKA_URI: http://service-registry:8761/eureka/
+      ACCOUNTS_URI: http://accounts
+      MYSQL_USER: transaction_user    
+      MYSQL_PASSWORD: transaction123  
+    ports:
+      - 8082:8080
+    networks:
+      dev:
+        aliases:
+          - transactions
+
+volumes:
+  mysql.accounts:
+  mysql.transactions:
+
+networks:
+  dev:
