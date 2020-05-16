@@ -66,5 +66,5 @@ The first comand will save an account. The second commando will save a transacti
 
 The system can also be tested through Swagger UI:
 
-- Accounts: localhost:8081/swagger-ui.html
+- Accounts: http://localhost:8081/swagger-ui.html
 - Transactions: http://localhost:8082/swagger-ui.html
