@@ -27,9 +27,9 @@ class AccountsApplicationTests {
 	private static final long ACCOUNT_ID_ERROR = 2L;
 	private static final BigDecimal AVAILABLE_CREDIT_LIMIT = BigDecimal.valueOf(10.5);
 	private static final BigDecimal CREDIT_VALUE_SUCCESS = BigDecimal.valueOf(9);
-	private static final BigDecimal DEBIT_VALUE_SUCCESS = BigDecimal.valueOf(9);
+	private static final BigDecimal DEBIT_VALUE_SUCCESS = BigDecimal.valueOf(-9);
 	
-	private static final BigDecimal DEBIT_VALUE_ERROR = BigDecimal.valueOf(11);
+	private static final BigDecimal DEBIT_VALUE_ERROR = BigDecimal.valueOf(-11);
 	
 	
 	@Autowired
@@ -81,7 +81,7 @@ class AccountsApplicationTests {
 		assertNotNull(account.getAccountId());
 		account = this.accountService.getAccountById(account.getAccountId());
 		account = this.accountService.debitAccount(DEBIT_VALUE_SUCCESS, account.getAccountId());
-		assertEquals(AVAILABLE_CREDIT_LIMIT.subtract(DEBIT_VALUE_SUCCESS), account.getAvailableCreditLimit());
+		assertEquals(AVAILABLE_CREDIT_LIMIT.add(DEBIT_VALUE_SUCCESS), account.getAvailableCreditLimit());
 	}
 	
 	@Test

@@ -45,7 +45,6 @@ public class AccountService {
 		if (account.getAvailableCreditLimit().compareTo(BigDecimal.ZERO) < 0) {
 			throw new AccountWithoutEnoughBalanceException("The informed account doesn't have enough balance to make the transaction");
 		}
-		account.setAvailableCreditLimit(account.getAvailableCreditLimit().add(debitValue));
 		return repository.save(account);
 	}
 }
