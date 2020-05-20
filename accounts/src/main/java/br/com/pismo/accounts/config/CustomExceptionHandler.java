@@ -17,6 +17,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import br.com.pismo.accounts.exceptions.AccountAlreadyExistsException;
 import br.com.pismo.accounts.exceptions.AccountNotFoundException;
+import br.com.pismo.accounts.exceptions.AccountWithoutEnoughBalanceException;
 import br.com.pismo.accounts.model.ErrorResponse;
 
 @SuppressWarnings({"unchecked","rawtypes"})
@@ -44,6 +45,14 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 		List<String> details = new ArrayList<>();
 		details.add(ex.getLocalizedMessage());
 		ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST, "Account already exists", details);
+		return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(AccountWithoutEnoughBalanceException.class)
+	public final ResponseEntity<Object> handleAccountWithoutBalance(AccountWithoutEnoughBalanceException ex, WebRequest request) {
+		List<String> details = new ArrayList<>();
+		details.add(ex.getLocalizedMessage());
+		ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST, "Account doesn't have enough balance to make the transaction", details);
 		return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
 	}
 

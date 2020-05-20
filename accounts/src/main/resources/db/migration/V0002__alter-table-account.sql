@@ -1,0 +1,1 @@
+alter table account add (available_credit_limit DECIMAL);

@@ -1,5 +1,7 @@
 package br.com.pismo.accounts.resource;
 
+import java.math.BigDecimal;
+
 import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.pismo.accounts.dto.TransactionDTO;
 import br.com.pismo.accounts.model.Account;
 import br.com.pismo.accounts.service.AccountService;
 import io.swagger.annotations.ApiOperation;
@@ -45,6 +48,15 @@ public class AccountResource {
     @PostMapping
     public ResponseEntity<?> saveAccount(@RequestBody(required = true) @Valid Account account) {
 		return new ResponseEntity<Account>(service.saveAccount(account), HttpStatus.CREATED);	
+	}
+	
+	@PostMapping("/transaction")
+	public ResponseEntity<?> postTransaction(@RequestBody @Valid TransactionDTO transaction) {
+		if (transaction.getValue().compareTo(BigDecimal.ZERO) < 0) {
+			return new ResponseEntity<Account>(this.service.debitAccount(transaction.getValue(), transaction.getAccountId()), HttpStatus.ACCEPTED);
+		} else {
+			return new ResponseEntity<Account>(this.service.creditAccount(transaction.getValue(), transaction.getAccountId()), HttpStatus.ACCEPTED);
+		}
 	}
 	
 }

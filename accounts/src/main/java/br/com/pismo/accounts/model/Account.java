@@ -1,5 +1,7 @@
 package br.com.pismo.accounts.model;
 
+import java.math.BigDecimal;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -40,5 +42,14 @@ public class Account {
 	@JsonProperty(value = "document_number")
 	@NumberFormat(style = Style.NUMBER)
 	private Long documentNumber;
+	
+	@ApiModelProperty(value = "Available Credit Limit", required = true)
+	@NotNull(message = "Available credit limit must be informed")
+	@NonNull
+	@Column(name="available_credit_limit")
+	@JsonProperty(value = "available_credit_limit")
+	@NumberFormat(style = Style.CURRENCY)
+	private BigDecimal availableCreditLimit;
+	
 	
 }

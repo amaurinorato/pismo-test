@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 import br.com.pismo.transactions.dto.AccountDTO;
+import br.com.pismo.transactions.dto.AccountTransactionDTO;
 import br.com.pismo.transactions.model.OperationType;
 import br.com.pismo.transactions.model.Transaction;
 import br.com.pismo.transactions.repository.TransactionRepository;
@@ -30,6 +31,8 @@ import feign.FeignException;
 class TransactionsServiceTests {
 	
 	
+	private static final BigDecimal INITIAL_LIMIT = BigDecimal.valueOf(10.5);
+
 	@Autowired
 	private TransactionRepository repository;
 
@@ -40,17 +43,35 @@ class TransactionsServiceTests {
     
     private Transaction transactionSuccess;
     
-    private final BigDecimal AMOUNT = BigDecimal.valueOf(145.45);
+    private AccountTransactionDTO accountTransactionDTOCreditSuccess;
+    private AccountTransactionDTO accountTransactionDTODebitSuccess;
+    private AccountTransactionDTO accountTransactionDTOError;
+    
+    private final BigDecimal AMOUNT = BigDecimal.valueOf(1);
     private final Long ACCOUNT_ID = 1L;
-    private final Long DOCUMENT_ID = 123456789L;
-
+    private final Long DOCUMENT_NUMBER = 123456789L;
+    private final BigDecimal CREDIT_VALUE_SUCESS = BigDecimal.valueOf(1);
+    private final BigDecimal DEBIT_VALUE_SUCESS = BigDecimal.valueOf(-1);
+    private final BigDecimal DEBIT_VALUE_ERROR = BigDecimal.valueOf(-11);
+    
+    
     @BeforeEach
     void init() {
     	AccountDTO accountFindById = createAccount();
+    	
+    	accountTransactionDTOCreditSuccess = new AccountTransactionDTO(CREDIT_VALUE_SUCESS, ACCOUNT_ID);
+    	accountTransactionDTOError = new AccountTransactionDTO(DEBIT_VALUE_ERROR, ACCOUNT_ID);
+    	accountTransactionDTODebitSuccess = new AccountTransactionDTO(DEBIT_VALUE_SUCESS, ACCOUNT_ID);
+    	
 		createTransactionSuccess();
 		
 		when(accountClient.getAccountById(1L)).thenReturn(new ResponseEntity<AccountDTO>(accountFindById, HttpStatus.OK));
 		when(accountClient.getAccountById(2L)).thenThrow(new FeignException(404, "Account not found") {
+			private static final long serialVersionUID = 1L;
+		});
+		when(accountClient.postTransaction(accountTransactionDTOCreditSuccess)).thenReturn(new ResponseEntity<AccountDTO>(new AccountDTO(ACCOUNT_ID, DOCUMENT_NUMBER, INITIAL_LIMIT.add(CREDIT_VALUE_SUCESS)), HttpStatus.ACCEPTED));
+		when(accountClient.postTransaction(accountTransactionDTODebitSuccess)).thenReturn(new ResponseEntity<AccountDTO>(new AccountDTO(ACCOUNT_ID, DOCUMENT_NUMBER, INITIAL_LIMIT.subtract(DEBIT_VALUE_SUCESS)), HttpStatus.ACCEPTED));
+		when(accountClient.postTransaction(accountTransactionDTOError)).thenThrow(new FeignException(400, "The informed account doesn't have enough balance to make the transaction") {
 			private static final long serialVersionUID = 1L;
 		});
 		
@@ -109,7 +130,8 @@ class TransactionsServiceTests {
 	private AccountDTO createAccount() {
 		AccountDTO accountFindById = new AccountDTO();
 		accountFindById.setAccountId(ACCOUNT_ID);
-		accountFindById.setDocumentNumber(DOCUMENT_ID);
+		accountFindById.setDocumentNumber(DOCUMENT_NUMBER);
+		accountFindById.setAvailableCreditLimit(INITIAL_LIMIT);
 		return accountFindById;
 	}
 	
